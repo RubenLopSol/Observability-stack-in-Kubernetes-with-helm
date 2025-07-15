@@ -1,0 +1,38 @@
+deploymentMode: monolithic
+
+tempo:
+  metricsGenerator:
+    enabled: true
+
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+
+  auth_enabled: false
+
+  multitenancyEnabled: false
+
+  config:
+    compactor:
+      compaction:
+        block_retention: 24h
+    overrides:
+      metrics_generator:
+        storage:
+          path: /tmp/tempo-metrics-generator-wal
+
+singleBinary:
+  replicas: 1
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: "" # optional: or specify your SC
+
+gateway:
+  enabled: true
+
+service:
+  type: ClusterIP
+  port: 3200

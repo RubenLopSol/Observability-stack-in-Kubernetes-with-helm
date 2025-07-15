@@ -1,0 +1,51 @@
+# This the chart to run all Loki components (ingester, querier, distributor, etc.) inside one container
+deploymentMode: SingleBinary  
+
+# Disable scalable mode
+write:
+  replicas: 0
+
+read:
+  replicas: 0
+
+backend:
+  replicas: 0
+
+#Disables structured metadata on logs (used in advanced scenarios with JSON/labels).
+loki:
+  limits_config:
+    allow_structured_metadata: false
+  auth_enabled: false
+  # storage setting which is not s3 or Minio or external object. All logs stay local in pod
+  storage:
+    type: filesystem
+  commonConfig:
+    replication_factor: 1 # single pod and no replicas
+    storage:
+      filesystem:
+        directory: /var/loki  # data will store in pod in this path
+
+  schemaConfig:
+    configs:
+      - from: 2024-01-01
+        store: boltdb-shipper # store logs in boltdb(localfiles), but also generate index file for fast searching
+        object_store: filesystem # using local file system (no cloud storage)
+        schema: v11
+        index:
+          prefix: index_
+          period: 24h # new index is created every day
+
+# deploy 1 pod running all Loki services
+singleBinary:
+  replicas: 1
+  persistence:
+    enabled: true # allows to persist your logs across pod restart
+    size: 2Gi
+    storageClass: standard
+
+# install nginx proxy infront of loki
+gateway:
+  enabled: true # expose loki API at : http://loki-gateway.observability.svc.cluster.local
+
+
+

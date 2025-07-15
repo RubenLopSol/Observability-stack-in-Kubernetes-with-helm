@@ -1,0 +1,113 @@
+---
+
+replicas: 1
+
+adminUser: admin
+adminPassword: admin
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+persistence:
+  enabled: false
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  automountServiceAccountToken: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+grafana.ini:
+  server:
+    root_url: http://localhost:3000
+  analytics:
+    check_for_updates: false
+  log:
+    mode: console
+
+
+livenessProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 60
+  timeoutSeconds: 30
+  failureThreshold: 10
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Mimir
+        type: prometheus
+        access: proxy
+        url: http://mimir-nginx.observability.svc:80/prometheus
+        isDefault: true
+        jsonData:
+          httpHeaderName1: X-Scope-OrgID
+        secureJsonData:
+          httpHeaderValue1: demo
+
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki-gateway.observability.svc.cluster.local
+
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo.observability.svc.cluster.local:3200
+        jsonData:
+          httpMethod: GET
+          tracesToLogsV2:
+            datasource: Loki
+            spanStartTimeShift: "1h"
+            spanEndTimeShift: "-1h"
+            tags:
+              - job
+              - instance
+              - pod
+            filterByTraceID: true
+            filterBySpanID: false
+
+
+# adminUser: admin
+# adminPassword: admin
+
+# service:
+#   type: NodePort
+#   port: 80
+#   nodePort: 32000  # acceso en localhost:32000
+
+
+# datasources:
+#   datasources.yaml:
+#     apiVersion: 1
+#     datasources:
+#       - name: Loki
+#         type: loki
+#         access: proxy
+#         url: http://loki:3100
+#       - name: Tempo
+#         type: tempo
+#         access: proxy
+#         url: http://tempo:3200
+#       - name: Mimir
+#         type: prometheus
+#         access: proxy
+#         url: http://mimir-query-frontend:8080/prometheus
+#         isDefault: true
+#         basicAuth: false
+#         jsonData:
+#           httpHeaderName1: ""

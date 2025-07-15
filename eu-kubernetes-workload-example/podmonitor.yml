@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: fastapi-backend
+  namespace: app
+  labels:
+    release: grafana-k8s-monitoring  # ✅ Match Alloy's selector
+spec:
+  selector:
+    matchLabels:
+      app: fastapi-backend
+  namespaceSelector:
+    matchNames:
+      - app
+  podMetricsEndpoints:
+    - port: http
+      interval: 15s

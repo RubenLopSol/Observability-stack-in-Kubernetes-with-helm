@@ -1,0 +1,26 @@
+controller:
+  volumes:
+    extra:
+      - name: backend-logs
+        hostPath:
+          path: /var/log/fastapi
+          type: DirectoryOrCreate
+
+alloy:
+  configMap:
+    create: false
+    name: alloy-config
+    key: configmap.alloy
+  extraPorts:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+
+  mounts:
+    extra:
+      - name: backend-logs
+        mountPath: /app-logs
+        readOnly: true

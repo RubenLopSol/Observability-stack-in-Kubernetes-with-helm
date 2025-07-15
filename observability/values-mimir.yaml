@@ -1,0 +1,86 @@
+global:
+  clusterDomain: cluster.local.
+  dnsNamespace: kube-system
+  dnsService: kube-dns
+
+minio:
+  enabled: true
+  rootUser: grafana-mimir
+  rootPassword: supersecret
+  policy: public
+
+
+alertmanager:
+  enabled: false
+
+ruler:
+  enabled: false
+
+gateway:
+  enabled: true
+
+nginx:
+  enabled: true
+
+query_frontend:
+  enabled: true
+
+query_scheduler:
+  replicas: 1
+
+querier:
+  replicas: 1
+
+distributor:
+  enabled: true
+  replicas: 1
+
+ingester:
+  replicas: 1
+  zoneAwareReplication:
+    enabled: false
+  persistentVolume:
+    size: 1Gi
+
+store_gateway:
+  replicas: 1
+  persistentVolume:
+    size: 1Gi
+  zoneAwareReplication:
+    enabled: false
+
+compactor:
+  enabled: true
+  persistentVolume:
+    size: 1Gi
+
+mimir:
+  structuredConfig:
+    ingester:
+      ring:
+        zone_awareness_enabled: false
+        replication_factor: 1
+    store_gateway:
+      sharding_ring:
+        zone_awareness_enabled: false
+        replication_factor: 1
+    blocks_storage:
+      backend: s3
+      s3:
+        endpoint: mimir-minio.observability.svc:9000
+        bucket_name: mimir-tsdb
+        access_key_id: grafana-mimir
+        secret_access_key: supersecret
+        insecure: true
+      tsdb:
+        dir: /data/tsdb
+
+    limits:
+      ingestion_rate: 1000000
+      ingestion_burst_size: 2000000
+
+    frontend:
+      log_queries_longer_than: 10s
+
+
+
