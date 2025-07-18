@@ -67,12 +67,12 @@
 
 6. Verifica en el servicio Alloy mediante port-forward que los datos de OpenCost se están exponiendo correctamente.
 
-   ![opencost](opencost-1.png)
-   ![opencost-graph](opencost-graph.png)
+   ![opencost](recursos/opencost-1.png)
+   ![opencost-graph](recursos/opencost-graph.png)
 
 7. Importa el dashboard oficial de OpenCost en Grafana y visualiza las métricas:
 
-   ![opencost-dashboard](opencost-dashboard.png)
+   ![opencost-dashboard](recursos/opencost-dashboard.png)
 
 ---
 
@@ -124,9 +124,9 @@
    kubectl create cm -n app alloy-config --from-file=configmap.alloy=../eu-kubernetes-workload-example/alloy/configm
    ```
 
-   ![Kepler-alloy](kepler-alloy.png)
+   ![Kepler-alloy](recursos/kepler-alloy.png)
 
 4. Visualizar las métricas de Kepler en Grafana:
 
-   ![kepler-dashboard](kepler-dashboard.png)
+   ![kepler-dashboard](recursos/kepler-dashboard.png)
 
