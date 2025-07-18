@@ -1,0 +1,38 @@
+fullnameOverride: kepler
+nameOverride: kepler
+
+
+securityContext:
+  privileged: true
+
+
+extraEnvVars:
+  KEPLER_LOG_LEVEL: "1"
+  ENABLE_GPU: "true"
+  ENABLE_QAT: "true"
+  ENABLE_EBPF_CGROUPID: "true"
+  EXPOSE_HW_COUNTER_METRICS: "true"
+  EXPOSE_IRQ_COUNTER_METRICS: "true"
+  EXPOSE_CGROUP_METRICS: "true"
+  ENABLE_PROCESS_METRICS: "true"
+  CGROUP_METRICS: "*"
+  EMISSION_FACTOR_JOULE: "0.0000002"
+
+modelServer:
+  enabled: false
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
+service:
+  type: ClusterIP
+  port: 9102
+
+# Enables ServiceMonitor — optional if using Prometheus Operator
+serviceMonitor:
+  enabled: false
+
+# Set deployment namespace via CLI or Helm

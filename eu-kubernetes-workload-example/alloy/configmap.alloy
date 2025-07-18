@@ -88,6 +88,67 @@ prometheus.remote_write "default" {
   }
 }
 
+prometheus.scrape "cadvisor" {
+  targets = [
+    {
+      __address__ = "localhost:10250",
+      job         = "kubelet",
+    },
+  ]
+
+  scheme = "https"
+
+  tls_config {
+    insecure_skip_verify = true
+  }
+
+  bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+prometheus.scrape "kubestatemetrics" {
+  targets = [
+    {
+      __address__ = "kube-state-metrics.kube-system.svc.cluster.local:8080",
+      job         = "kube-state-metrics",
+    },
+  ]
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+prometheus.scrape "opencost" {
+  targets = [
+    {
+      __address__ = "opencost.observability.svc.cluster.local:9003", 
+      job         = "opencost",
+    },
+  ]
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+
+discovery.kubernetes "kepler_pods" {
+  role = "pod"
+}
+
+prometheus.scrape "kepler" {
+  targets = discovery.kubernetes.kepler_pods.targets
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+prometheus.scrape "keplerstatic" {
+  targets = [
+    {
+      __address__ = "kepler.observability.svc.cluster.local:9102",
+      job         = "kepler",
+    },
+  ]
+
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+
 ////////////////////
 // LOGS: K8s PODS //
 ////////////////////

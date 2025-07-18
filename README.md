@@ -181,3 +181,4 @@ Confirma que todos los componentes de Minio estan activos y healthy.
     kubectl get secret mimir-minio -n observability -o jsonpath="{.data.rootPassword}" | base64 -d
     ```
 
+

@@ -1,0 +1,40 @@
+opencost:
+  enabled: true
+
+  # Configuración del exportador (cost model)
+  exporter:
+    apiPort: 9003
+    defaultClusterId: "minikube"
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    readinessProbe:
+      enabled: false
+    env:
+      - name: PROMETHEUS_HEADER_X_SCOPE_ORGID
+        value: "demo"
+      - name: PROMETHEUS_SERVER_ENDPOINT
+        value: http://mimir-query-frontend.observability.svc.cluster.local:8080/prometheus
+        
+  customPricing:
+    enabled: true
+    createConfigmap: true
+    provider: custom
+    costModel:
+      CPU: 1.25
+      RAM: 0.60
+  prometheus:
+    internal:
+      enabled: false
+    external:
+      enabled: true
+      url: http://mimir-query-frontend.observability.svc.cluster.local:8080/prometheus
+  # Activar la UI para ver el dashboard en Grafana
+  ui:
+    enabled: true
+    uiPort: 9090
+    livenessProbe:
+      enabled: false
+    readinessProbe:
+      enabled: false
